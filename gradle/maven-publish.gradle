@@ -83,7 +83,7 @@ afterEvaluate { project ->
         if (plugins.hasPlugin('com.android.application') || plugins.hasPlugin('com.android.library')) {
             archives androidSourcesJar
             archives androidJavadocsJar
-        } else if (plugins.hasPlugin("java")){
+        } else if (plugins.hasPlugin("java")) {
             archives sourcesJar
             archives javadocJar
         }

@@ -63,7 +63,7 @@ class ScanUtil {
     static void scanClass(InputStream inputStream) {
         ClassReader cr = new ClassReader(inputStream)
         ClassWriter cw = new ClassWriter(cr, 0)
-        ScanClassVisitor cv = new ScanClassVisitor(Opcodes.ASM5, cw)
+        ScanClassVisitor cv = new ScanClassVisitor(Opcodes.ASM9, cw)
         cr.accept(cv, ClassReader.EXPAND_FRAMES)
         inputStream.close()
     }
