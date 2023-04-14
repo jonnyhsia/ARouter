@@ -21,9 +21,9 @@ https://github.com/jadepeakpoet/AndroidProjectRenovation
 使用时，相对原来的库，仅需要做以下更改  
 1.  
 以下几个依赖的group从com.alibaba更改为com.github.jadepeakpoet.ARouter  
-com.github.jadepeakpoet.ARouter:arouter-register:1.0.1  
-com.github.jadepeakpoet.ARouter:arouter-api:1.0.1  
-com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.1  
+com.github.jadepeakpoet.ARouter:arouter-register:1.0.2  
+com.github.jadepeakpoet.ARouter:arouter-api:1.0.2  
+com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2  
 2.  
 maven库从mavenCentral变更为jitpack  
 maven { url 'https://www.jitpack.io' }
@@ -70,8 +70,8 @@ maven { url 'https://www.jitpack.io' }
     dependencies {
         // 替换成最新版本, 需要注意的是api
         // 要与compiler匹配使用，均使用最新版可以保证兼容
-        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.1'
-        annotationProcessor 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.1'
+        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.2'
+        annotationProcessor 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2'
         ...
     }
     // 旧版本gradle插件(< 2.2)，可以使用apt插件，配置方法见文末'其他#4'
@@ -133,7 +133,7 @@ maven { url 'https://www.jitpack.io' }
         }
 
         dependencies {
-            classpath "com.github.jadepeakpoet.ARouter:arouter-register:1.0.1"
+            classpath "com.github.jadepeakpoet.ARouter:arouter-register:1.0.2"
         }
     }
     ```
@@ -559,8 +559,8 @@ maven { url 'https://www.jitpack.io' }
     }
 
     dependencies {
-        compile 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.1'
-        apt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.1'
+        compile 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.2'
+        apt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2'
         ...
     }
     ```
@@ -577,8 +577,8 @@ maven { url 'https://www.jitpack.io' }
     }
 
     dependencies {
-        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.1'
-        kapt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.1'
+        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.2'
+        kapt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2'
         ...
     }
     ```

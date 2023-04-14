@@ -1,10 +1,10 @@
 buildscript {
-    ext.arouter_register_version = '1.0.1'
+    ext.arouter_register_version = '1.0.2'
 
     dependencies {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
-        classpath "com.github.jadepeakpoet:arouter-register:$arouter_register_version"
+        classpath "com.github.jadepeakpoet:ARouter.arouter-register:$arouter_register_version"
     }
 }
 
