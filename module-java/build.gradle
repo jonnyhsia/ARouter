@@ -13,6 +13,8 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.2.83'
 }
 android {
+    namespace 'com.alibaba.android.arouter.demo.module1'
+
     compileSdk Integer.parseInt(COMPILE_SDK_VERSION)
 
     defaultConfig {
@@ -36,8 +38,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-
-        lintOptions { abortOnError false }
     }
-    namespace 'com.alibaba.android.arouter.demo.module1'
+
+    lintOptions {
+        abortOnError false
+    }
 }

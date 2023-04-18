@@ -3,6 +3,8 @@ plugins {
 }
 
 android {
+    namespace 'com.alibaba.android.arouter'
+
     compileSdk Integer.parseInt(COMPILE_SDK_VERSION)
 
     defaultConfig {
@@ -25,10 +27,10 @@ android {
         release {
             minifyEnabled false
         }
-
-        lintOptions { abortOnError false }
     }
-    namespace 'com.alibaba.android.arouter'
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
