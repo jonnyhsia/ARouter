@@ -12,6 +12,9 @@
 # Android开源库翻新计划  
 https://github.com/jadepeakpoet/AndroidProjectRenovation  
 
+2023-04-22 1.0.3 更新:
+发布 1.0.3版本, 适配AGP8.0 (AGP 7.x请使用1.0.2版本)
+
 官方两年没更新了，我fork了一个版本，主要做了以下更改，如果有问题，大家可以直接在AndroidProjectRenovation中给我提issue，我会尽快解决  
 1.迁移到androidx，对于本库可关闭jetifier(android.enableJetifier=false)或不做配置  
 2.适配到AGP7.4.2，解决其中的兼容性bug  
