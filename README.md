@@ -11,6 +11,10 @@
 #### Description
 # Android Open Project Renovation
 https://github.com/jadepeakpoet/AndroidProjectRenovation  
+
+2023-04-22 1.0.3 Update: 
+Release 1.0.3, Adapt for AGP8.0 (Use 1.0.2 for AGP 7.x) 
+
 The official version has not been upgraded for two years. I forked a version and made the following changes，if there is a problem, you can directly give me the issue at project AndroidProjectRenovation and I will solve it as soon as possible  
 1. Migrate to androidx. For this library, you can turn off jetifier(android.enableJetifier=false) or do not configure it.
 2. Adapt to AGP7.4.2 to solve compatibility bugs
