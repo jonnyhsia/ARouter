@@ -1,25 +1,25 @@
 pluginManagement {
     repositories {
-        maven {
-            url = "${rootDir}/build/repo"
-        }
         mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         google()
+        maven {
+            setUrl("repo")
+        }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven {
-            url = "${rootDir}/build/repo"
-        }
         mavenLocal()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         google()
+        maven {
+            setUrl("repo")
+        }
     }
 }
 

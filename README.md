@@ -20,9 +20,9 @@ The official version has not been upgraded for two years. I forked a version and
 When using, you only need to make the following  changes to the original library  
 1.  
 The following dependent groups are changed from com.alibaba to com.github.jadepeakpoet.ARouter  
-com.github.jadepeakpoet.ARouter:arouter-register:1.0.2  
-com.github.jadepeakpoet.ARouter:arouter-api:1.0.2  
-com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2  
+com.github.jadepeakpoet.ARouter:arouter-register:1.0.3  
+com.github.jadepeakpoet.ARouter:arouter-api:1.0.3  
+com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.3  
 2.  
 Maven library changed from Maven Central to jitpack  
 maven { url 'https://www.jitpack.io' }
@@ -67,8 +67,8 @@ maven { url 'https://www.jitpack.io' }
 
     dependencies {
         // Replace with the latest version
-        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.2'
-        annotationProcessor 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2'
+        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.3'
+        annotationProcessor 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.3'
         ...
     }
     // Old version of gradle plugin (< 2.2), You can use apt plugin, look at 'Other#1'
@@ -131,7 +131,7 @@ maven { url 'https://www.jitpack.io' }
 
         dependencies {
             // Replace with the latest version
-            classpath "com.github.jadepeakpoet.ARouter:arouter-register:1.0.2"
+            classpath "com.github.jadepeakpoet.ARouter:arouter-register:1.0.3"
         }
     }
     ```
@@ -517,8 +517,8 @@ annotation，**Only the routing information of the same group can be registered 
     }
 
     dependencies {
-        compile 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.2'
-        apt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2'
+        compile 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.3'
+        apt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.3'
         ...
     }
     ```
@@ -535,8 +535,8 @@ annotation，**Only the routing information of the same group can be registered 
     }
 
     dependencies {
-        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.2'
-        kapt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.2'
+        implementation 'com.github.jadepeakpoet.ARouter:arouter-api:1.0.3'
+        kapt 'com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.3'
         ...
     }
     ```

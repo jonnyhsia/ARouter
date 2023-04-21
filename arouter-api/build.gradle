@@ -28,8 +28,16 @@ android {
             minifyEnabled false
         }
     }
+
     lintOptions {
         abortOnError false
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 

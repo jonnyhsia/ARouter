@@ -1,6 +1,7 @@
 plugins {
-    id 'groovy'
-    id 'maven-publish'
+    id("maven-publish")
+    id("org.jetbrains.kotlin.jvm")
+    id "java-gradle-plugin"
 }
 
 dependencies {
@@ -9,9 +10,19 @@ dependencies {
 }
 
 dependencies {
-    implementation 'com.android.tools.build:gradle:7.4.2'
-    implementation 'commons-codec:commons-codec:1.15'
-    implementation 'commons-io:commons-io:2.10.0'
+    implementation "com.android.tools.build:gradle:8.0.0"
+    implementation "commons-codec:commons-codec:1.15"
+    implementation "commons-io:commons-io:2.10.0"
+    implementation "org.ow2.asm:asm-util:9.2"
+}
+
+gradlePlugin {
+    plugins {
+        ArouterPlugin {
+            id = 'com.alibaba.jadepeak'
+            implementationClass = 'com.alibaba.android.arouter.register.launch.PluginLaunch'
+        }
+    }
 }
 
 apply from: rootProject.file('gradle/maven-publish.gradle')

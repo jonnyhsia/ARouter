@@ -32,7 +32,7 @@ afterEvaluate { project ->
                 }
                 repositories {
                     maven {
-                        url = "${rootProject.buildDir}/repo"
+                        url = "${rootProject.rootDir}/repo"
                     }
                 }
             }

@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-//    id 'com.alibaba.arouter' // todo by wyf
+    id 'com.alibaba.arouter'
 }
 
 android {
