@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'com.alibaba.arouter'
+//    id 'com.alibaba.arouter'
 }
 
 android {
