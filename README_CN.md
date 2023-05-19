@@ -12,6 +12,26 @@
 # Android开源库翻新计划  
 https://github.com/jadepeakpoet/AndroidProjectRenovation  
 
+2023-05-19
+每个application模块都应该配置插件 com.alibaba.arouter(特别针对项目中有多个application模块的情况/组件化)  
+
+使用方式根据项目的具体情况，分为以下几种，看情况自行选择  
+ //  build.gradle 旧的使用方式
+apply plugin: 'com.alibaba.arouter'  
+
+ //  build.gradle 新的使用方式
+plugins {  
+    id 'com.alibaba.arouter'  
+    id 'another.plugin.example'  
+}  
+
+// build.gradle.kts 的使用方式 
+plugins {  
+    id("com.alibaba.arouter")  
+    id("another.plugin.example")  
+}  
+  
+  
 2023-04-22 1.0.3 更新:
 发布 1.0.3版本, 适配AGP8.0 (AGP 7.x请使用1.0.2版本)
 
