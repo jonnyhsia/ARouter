@@ -12,6 +12,25 @@
 # Android Open Project Renovation
 https://github.com/jadepeakpoet/AndroidProjectRenovation  
 
+2023-05-19
+plugin com.alibaba.arouter should add to every application module(in case of multi application module of your project)  
+The using may like ways below on your project condition  
+  
+ // old way use for build.gradle  
+apply plugin: 'com.alibaba.arouter'  
+
+ // new way use for build.gradle  
+plugins {  
+    id 'com.alibaba.arouter'  
+    id 'another.plugin.example'  
+}  
+
+// use for build.gradle.kts  
+plugins {  
+    id("com.alibaba.arouter")  
+    id("another.plugin.example")  
+}  
+  
 2023-04-22 1.0.3 Update: 
 Release 1.0.3, Adapt for AGP8.0 (Use 1.0.2 for AGP 7.x) 
 
