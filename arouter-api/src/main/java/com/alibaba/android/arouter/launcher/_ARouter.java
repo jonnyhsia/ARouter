@@ -8,9 +8,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
 
 import com.alibaba.android.arouter.core.InstrumentationHook;
 import com.alibaba.android.arouter.core.LogisticsCenter;
@@ -21,7 +22,11 @@ import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.InterceptorCallback;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.facade.model.RouteMeta;
-import com.alibaba.android.arouter.facade.service.*;
+import com.alibaba.android.arouter.facade.service.AutowiredService;
+import com.alibaba.android.arouter.facade.service.DegradeService;
+import com.alibaba.android.arouter.facade.service.InterceptorService;
+import com.alibaba.android.arouter.facade.service.PathReplaceService;
+import com.alibaba.android.arouter.facade.service.PretreatmentService;
 import com.alibaba.android.arouter.facade.template.ILogger;
 import com.alibaba.android.arouter.facade.template.IRouteGroup;
 import com.alibaba.android.arouter.thread.DefaultPoolExecutor;
@@ -54,6 +59,8 @@ final class _ARouter {
     private static Context mContext;
 
     private static InterceptorService interceptorService;
+
+    private static DegradeService globalDegradeService;
 
     private _ARouter() {
     }
@@ -185,7 +192,19 @@ final class _ARouter {
             if (null != pService) {
                 path = pService.forString(path);
             }
-            return build(path, extractGroup(path), true);
+            String group = extractGroup(path);
+            if (group == null) {
+                // group 解析失败，降级处理
+                DegradeService degradeService = findDegradeService();
+                if (degradeService != null) {
+                    Postcard postcard = degradeService.onRouteParseFailed(path);
+                    if (postcard != null) {
+                        return postcard;
+                    }
+                }
+                throw new HandlerException(Consts.TAG + "Extract the default group failed, the path (" + path + ") must be start with '/' and contain more than 2 '/'!");
+            }
+            return build(path, group, false);
         }
     }
 
@@ -200,7 +219,19 @@ final class _ARouter {
             if (null != pService) {
                 uri = pService.forUri(uri);
             }
-            return new Postcard(uri.getPath(), extractGroup(uri.getPath()), uri, null);
+            String group = extractGroup(uri.getPath());
+            if (group == null) {
+                // group 解析失败，降级处理
+                DegradeService degradeService = findDegradeService();
+                if (degradeService != null) {
+                    Postcard postcard = degradeService.onRouteParseFailed(uri);
+                    if (postcard != null) {
+                        return postcard;
+                    }
+                }
+                throw new HandlerException(Consts.TAG + "Extract the default group failed, the path (" + uri + ") must be start with '/' and contain more than 2 '/'!");
+            }
+            return new Postcard(uri.getPath(), group, uri, null);
         }
     }
 
@@ -226,7 +257,7 @@ final class _ARouter {
      */
     private String extractGroup(String path) {
         if (TextUtils.isEmpty(path) || !path.startsWith("/")) {
-            throw new HandlerException(Consts.TAG + "Extract the default group failed, the path must be start with '/' and contain more than 2 '/'!");
+            return null;
         }
 
         try {
@@ -296,25 +327,25 @@ final class _ARouter {
         } catch (NoRouteFoundException ex) {
             logger.warning(Consts.TAG, ex.getMessage());
 
-            if (debuggable()) {
-                // Show friendly tips for user.
-                runInMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(mContext, "There's no route matched!\n" +
-                                " Path = [" + postcard.getPath() + "]\n" +
-                                " Group = [" + postcard.getGroup() + "]", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-
             if (null != callback) {
                 callback.onLost(postcard);
             } else {
                 // No callback for this invoke, then we use the global degrade service.
-                DegradeService degradeService = ARouter.getInstance().navigation(DegradeService.class);
+                DegradeService degradeService = findDegradeService();
+                boolean handled = false;
                 if (null != degradeService) {
-                    degradeService.onLost(context, postcard);
+                    handled = degradeService.onLost(context, postcard);
+                }
+                if (!handled && debuggable()) {
+                    // Show friendly tips for user.
+                    runInMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mContext, "There's no route matched!\n" +
+                                    " Path = [" + postcard.getPath() + "]\n" +
+                                    " Group = [" + postcard.getGroup() + "]", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
 
@@ -496,5 +527,12 @@ final class _ARouter {
         }
 
         return false;
+    }
+
+    private DegradeService findDegradeService() {
+        if (globalDegradeService == null) {
+            globalDegradeService = ARouter.getInstance().navigation(DegradeService.class);
+        }
+        return globalDegradeService;
     }
 }

@@ -3,12 +3,13 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
-    implementation project(':arouter-annotation')
+    implementation "${ANNOTATION}"
+//    implementation project(':arouter-annotation')
 
     annotationProcessor 'com.google.auto.service:auto-service:1.0.1'
     compileOnly 'com.google.auto.service:auto-service-annotations:1.0.1'

@@ -1,25 +1,59 @@
 pluginManagement {
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        //阿里云私有仓库
         maven {
-            url = "${rootDir}/build/repo"
+            url 'https://packages.aliyun.com/maven/repository/2356342-release-jNlzMn/'
+            credentials {
+                username '601251c54fb2132a19a10e23'
+                password 'CuV[qT5f9sFN'
+            }
+        }
+        //阿里云私有仓库
+        maven {
+            url 'https://packages.aliyun.com/maven/repository/2356342-snapshot-XRJVDn/'
+            credentials {
+                username '601251c54fb2132a19a10e23'
+                password 'CuV[qT5f9sFN'
+            }
         }
         mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         google()
+        maven {
+            setUrl("repo")
+        }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        //阿里云私有仓库
         maven {
-            url = "${rootDir}/build/repo"
+            url 'https://packages.aliyun.com/maven/repository/2356342-release-jNlzMn/'
+            credentials {
+                username '601251c54fb2132a19a10e23'
+                password 'CuV[qT5f9sFN'
+            }
+        }
+        //阿里云私有仓库
+        maven {
+            url 'https://packages.aliyun.com/maven/repository/2356342-snapshot-XRJVDn/'
+            credentials {
+                username '601251c54fb2132a19a10e23'
+                password 'CuV[qT5f9sFN'
+            }
         }
         mavenLocal()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         google()
+        maven {
+            setUrl("repo")
+        }
     }
 }
 

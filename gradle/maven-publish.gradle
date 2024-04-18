@@ -17,75 +17,88 @@
 apply plugin: "maven-publish"
 
 afterEvaluate { project ->
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId = GROUP
-                artifactId = POM_ARTIFACT_ID
-                version = VERSION_NAME
-                afterEvaluate {
-                    if (plugins.hasPlugin('com.android.application') || plugins.hasPlugin('com.android.library')) {
-                        from components.release
-                    } else if (plugins.hasPlugin("java")) {
-                        from components.java
-                    }
-                }
-                repositories {
-                    maven {
-                        url = "${rootProject.buildDir}/repo"
-                    }
-                }
-            }
-        }
-    }
+    def isAndroidLibrary = plugins.hasPlugin('com.android.application') || plugins.hasPlugin('com.android.library')
+    def isJavaLibrary = plugins.hasPlugin('java')
 
-    if (plugins.hasPlugin('com.android.application') || plugins.hasPlugin('com.android.library')) {
-        task androidJavadocs(type: Javadoc) {
+    if (isAndroidLibrary) {
+        tasks.register('androidJavadocs', Javadoc) {
             failOnError false
             source = android.sourceSets.main.java.source
             classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
         }
 
-        task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        tasks.register('androidJavadocsJar', Jar) {
+            dependsOn androidJavadocs
             getArchiveClassifier().convention('javadoc')
             getArchiveClassifier().set('javadoc')
             from androidJavadocs.destinationDir
         }
 
-        task androidSourcesJar(type: Jar) {
+        tasks.register('androidSourcesJar', Jar) {
             getArchiveClassifier().convention('sources')
             getArchiveClassifier().set('sources')
             from android.sourceSets.main.java.source
         }
-    } else if (plugins.hasPlugin("java")) {
-        task sourcesJar(type: Jar, dependsOn: classes) {
+    } else if (isJavaLibrary) {
+        tasks.register('sourcesJar', Jar) {
+            dependsOn classes
             getArchiveClassifier().convention('sources')
             getArchiveClassifier().set('sources')
             from sourceSets.main.allSource
         }
 
-        task javadocJar(type: Jar, dependsOn: javadoc) {
+        tasks.register('javadocJar', Jar) {
+            dependsOn javadoc
             getArchiveClassifier().convention('javadoc')
             getArchiveClassifier().set('javadoc')
             from javadoc.destinationDir
         }
     }
 
-    if (JavaVersion.current().isJava8Compatible()) {
-        allprojects {
-            tasks.withType(Javadoc) {
-                options.addStringOption('Xdoclint:none', '-quiet')
+    publishing {
+        String versionName = VERSION_NAME
+        def isSnapshot = versionName.endsWith('SNAPSHOT')
+        publications {
+            maven(MavenPublication) {
+                groupId = GROUP
+                artifactId = POM_ARTIFACT_ID
+                version = VERSION_NAME
+                afterEvaluate {
+                    if (isAndroidLibrary) {
+                        from components.release
+                        artifact androidSourcesJar
+                    } else if (isJavaLibrary) {
+                        from components.java
+                        artifact sourcesJar
+                    }
+                }
+                repositories {
+                    //阿里云私有仓库
+                    maven {
+                        if (isSnapshot) {
+                            name('Snapshot')
+                            url 'https://packages.aliyun.com/maven/repository/2356342-snapshot-XRJVDn/'
+                        } else {
+                            name('Release')
+                            url 'https://packages.aliyun.com/maven/repository/2356342-release-jNlzMn/'
+                        }
+                        credentials {
+                            username '601251c54fb2132a19a10e23'
+                            password 'CuV[qT5f9sFN'
+                        }
+                    }
+                }
             }
         }
     }
 
-    artifacts {
-        if (plugins.hasPlugin('com.android.application') || plugins.hasPlugin('com.android.library')) {
-            archives androidSourcesJar
-            archives androidJavadocsJar
-        } else if (plugins.hasPlugin("java")) {
-            archives sourcesJar
-            archives javadocJar
+    if (JavaVersion.current().isJava8Compatible()) {
+        allprojects {
+            tasks.withType(Javadoc).tap {
+                configureEach {
+                    options.addStringOption('Xdoclint:none', '-quiet')
+                }
+            }
         }
     }
 }

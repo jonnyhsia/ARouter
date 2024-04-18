@@ -1,5 +1,24 @@
 package com.alibaba.android.arouter.compiler.processor;
 
+import static com.alibaba.android.arouter.compiler.utils.Consts.ACTIVITY;
+import static com.alibaba.android.arouter.compiler.utils.Consts.ANNOTATION_TYPE_AUTOWIRED;
+import static com.alibaba.android.arouter.compiler.utils.Consts.ANNOTATION_TYPE_ROUTE;
+import static com.alibaba.android.arouter.compiler.utils.Consts.FRAGMENT;
+import static com.alibaba.android.arouter.compiler.utils.Consts.FRAGMENT_V4;
+import static com.alibaba.android.arouter.compiler.utils.Consts.IPROVIDER_GROUP;
+import static com.alibaba.android.arouter.compiler.utils.Consts.IROUTE_GROUP;
+import static com.alibaba.android.arouter.compiler.utils.Consts.ITROUTE_ROOT;
+import static com.alibaba.android.arouter.compiler.utils.Consts.METHOD_LOAD_INTO;
+import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_GROUP;
+import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_PROVIDER;
+import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_ROOT;
+import static com.alibaba.android.arouter.compiler.utils.Consts.PACKAGE_OF_GENERATE_DOCS;
+import static com.alibaba.android.arouter.compiler.utils.Consts.PACKAGE_OF_GENERATE_FILE;
+import static com.alibaba.android.arouter.compiler.utils.Consts.SEPARATOR;
+import static com.alibaba.android.arouter.compiler.utils.Consts.SERVICE;
+import static com.alibaba.android.arouter.compiler.utils.Consts.WARNING_TIPS;
+import static javax.lang.model.element.Modifier.PUBLIC;
+
 import com.alibaba.android.arouter.compiler.entity.RouteDoc;
 import com.alibaba.android.arouter.compiler.utils.Consts;
 import com.alibaba.android.arouter.facade.annotation.Autowired;
@@ -42,24 +61,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.StandardLocation;
-
-import static com.alibaba.android.arouter.compiler.utils.Consts.ACTIVITY;
-import static com.alibaba.android.arouter.compiler.utils.Consts.ANNOTATION_TYPE_AUTOWIRED;
-import static com.alibaba.android.arouter.compiler.utils.Consts.ANNOTATION_TYPE_ROUTE;
-import static com.alibaba.android.arouter.compiler.utils.Consts.FRAGMENT;
-import static com.alibaba.android.arouter.compiler.utils.Consts.IPROVIDER_GROUP;
-import static com.alibaba.android.arouter.compiler.utils.Consts.IROUTE_GROUP;
-import static com.alibaba.android.arouter.compiler.utils.Consts.ITROUTE_ROOT;
-import static com.alibaba.android.arouter.compiler.utils.Consts.METHOD_LOAD_INTO;
-import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_GROUP;
-import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_PROVIDER;
-import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_ROOT;
-import static com.alibaba.android.arouter.compiler.utils.Consts.PACKAGE_OF_GENERATE_DOCS;
-import static com.alibaba.android.arouter.compiler.utils.Consts.PACKAGE_OF_GENERATE_FILE;
-import static com.alibaba.android.arouter.compiler.utils.Consts.SEPARATOR;
-import static com.alibaba.android.arouter.compiler.utils.Consts.SERVICE;
-import static com.alibaba.android.arouter.compiler.utils.Consts.WARNING_TIPS;
-import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
  * A processor used for find route.
@@ -129,10 +130,10 @@ public class RouteProcessor extends BaseProcessor {
 
             rootMap.clear();
 
-            TypeMirror type_Activity = elementUtils.getTypeElement(ACTIVITY).asType();
-            TypeMirror type_Service = elementUtils.getTypeElement(SERVICE).asType();
-            TypeMirror fragmentTm = elementUtils.getTypeElement(FRAGMENT).asType();
-            TypeMirror fragmentTmV4 = elementUtils.getTypeElement(Consts.FRAGMENT_V4).asType();
+            TypeMirror type_Activity = getType(ACTIVITY);
+            TypeMirror type_Service = getType(SERVICE);
+            TypeMirror fragmentTm = getType(FRAGMENT);
+            TypeMirror fragmentTmV4 = getType(FRAGMENT_V4);
 
             // Interface of ARouter
             TypeElement type_IRouteGroup = elementUtils.getTypeElement(IROUTE_GROUP);
@@ -186,13 +187,13 @@ public class RouteProcessor extends BaseProcessor {
                 RouteMeta routeMeta;
 
                 // Activity or Fragment
-                if (types.isSubtype(tm, type_Activity) || types.isSubtype(tm, fragmentTm) || types.isSubtype(tm, fragmentTmV4)) {
+                if (isSubtype(tm, type_Activity) || isSubtype(tm, fragmentTm) || isSubtype(tm, fragmentTmV4)) {
                     // Get all fields annotation by @Autowired
                     Map<String, Integer> paramsType = new HashMap<>();
                     Map<String, Autowired> injectConfig = new HashMap<>();
                     injectParamCollector(element, paramsType, injectConfig);
 
-                    if (types.isSubtype(tm, type_Activity)) {
+                    if (isSubtype(tm, type_Activity)) {
                         // Activity
                         logger.info(">>> Found activity route: " + tm.toString() + " <<<");
                         routeMeta = new RouteMeta(route, element, RouteType.ACTIVITY, paramsType);
@@ -203,10 +204,10 @@ public class RouteProcessor extends BaseProcessor {
                     }
 
                     routeMeta.setInjectConfig(injectConfig);
-                } else if (types.isSubtype(tm, iProvider)) {         // IProvider
+                } else if (isSubtype(tm, iProvider)) {         // IProvider
                     logger.info(">>> Found provider route: " + tm.toString() + " <<<");
                     routeMeta = new RouteMeta(route, element, RouteType.PROVIDER, null);
-                } else if (types.isSubtype(tm, type_Service)) {           // Service
+                } else if (isSubtype(tm, type_Service)) {           // Service
                     logger.info(">>> Found service route: " + tm.toString() + " <<<");
                     routeMeta = new RouteMeta(route, element, RouteType.parse(SERVICE), null);
                 } else {
@@ -257,7 +258,7 @@ public class RouteProcessor extends BaseProcessor {
                                             className,
                                             routeMeta.getPath(),
                                             routeMeta.getGroup());
-                                } else if (types.isSubtype(tm, iProvider)) {
+                                } else if (isSubtype(tm, iProvider)) {
                                     // This interface extend the IProvider, so it can be used for mark provider
                                     loadIntoMethodOfProviderBuilder.addStatement(
                                             "providers.put($S, $T.build($T." + routeMeta.getType() + ", $T.class, $S, $S, null, " + routeMeta.getPriority() + ", " + routeMeta.getExtra() + "))",
@@ -369,6 +370,21 @@ public class RouteProcessor extends BaseProcessor {
         }
     }
 
+    private TypeMirror getType(String className) {
+        TypeElement element = elementUtils.getTypeElement(className);
+        if (element != null) {
+            return element.asType();
+        }
+        return null;
+    }
+
+    private boolean isSubtype(TypeMirror type1, TypeMirror type2) {
+        if (type1 == null || type2 == null) {
+            return false;
+        }
+        return types.isSubtype(type1, type2);
+    }
+
     /**
      * Recursive inject config collector.
      *
@@ -376,7 +392,7 @@ public class RouteProcessor extends BaseProcessor {
      */
     private void injectParamCollector(Element element, Map<String, Integer> paramsType, Map<String, Autowired> injectConfig) {
         for (Element field : element.getEnclosedElements()) {
-            if (field.getKind().isField() && field.getAnnotation(Autowired.class) != null && !types.isSubtype(field.asType(), iProvider)) {
+            if (field.getKind().isField() && field.getAnnotation(Autowired.class) != null && !isSubtype(field.asType(), iProvider)) {
                 // It must be field, then it has annotation, but it not be provider.
                 Autowired paramConfig = field.getAnnotation(Autowired.class);
                 String injectName = StringUtils.isEmpty(paramConfig.name()) ? field.getSimpleName().toString() : paramConfig.name();
