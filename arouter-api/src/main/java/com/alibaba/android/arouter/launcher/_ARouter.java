@@ -21,10 +21,12 @@ import com.alibaba.android.arouter.exception.NoRouteFoundException;
 import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.InterceptorCallback;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
+import com.alibaba.android.arouter.facade.enums.RouteType;
 import com.alibaba.android.arouter.facade.model.RouteMeta;
 import com.alibaba.android.arouter.facade.service.AutowiredService;
 import com.alibaba.android.arouter.facade.service.DegradeService;
 import com.alibaba.android.arouter.facade.service.InterceptorService;
+import com.alibaba.android.arouter.facade.service.MethodExecuteService;
 import com.alibaba.android.arouter.facade.service.PathReplaceService;
 import com.alibaba.android.arouter.facade.service.PretreatmentService;
 import com.alibaba.android.arouter.facade.template.ILogger;
@@ -61,6 +63,7 @@ final class _ARouter {
     private static InterceptorService interceptorService;
 
     private static DegradeService globalDegradeService;
+    private static MethodExecuteService globalExecuteService;
 
     private _ARouter() {
     }
@@ -313,6 +316,16 @@ final class _ARouter {
      * @param callback    cb
      */
     protected Object navigation(final Context context, final Postcard postcard, final int requestCode, final NavigationCallback callback) {
+        if (postcard.getType() == RouteType.METHOD) {
+            MethodExecuteService methodExecuteService = findMethodExecuteService();
+            if (methodExecuteService != null) {
+                // Set context to postcard.
+                postcard.setContext(null == context ? mContext : context);
+                return methodExecuteService.onExecute(postcard.getContext(), postcard);
+            }
+            return null;
+        }
+
         PretreatmentService pretreatmentService = ARouter.getInstance().navigation(PretreatmentService.class);
         if (null != pretreatmentService && !pretreatmentService.onPretreatment(context, postcard)) {
             // Pretreatment failed, navigation canceled.
@@ -534,5 +547,12 @@ final class _ARouter {
             globalDegradeService = ARouter.getInstance().navigation(DegradeService.class);
         }
         return globalDegradeService;
+    }
+
+    private MethodExecuteService findMethodExecuteService() {
+        if (globalExecuteService == null) {
+            globalExecuteService = ARouter.getInstance().navigation(MethodExecuteService.class);
+        }
+        return globalExecuteService;
     }
 }

@@ -12,6 +12,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import android.util.SparseArray;
 
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
+import com.alibaba.android.arouter.facade.enums.RouteType;
 import com.alibaba.android.arouter.facade.model.RouteMeta;
 import com.alibaba.android.arouter.facade.service.SerializationService;
 import com.alibaba.android.arouter.facade.template.IProvider;
@@ -609,5 +610,10 @@ public final class Postcard extends RouteMeta {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public Postcard asMethod() {
+        setType(RouteType.METHOD);
+        return this;
     }
 }

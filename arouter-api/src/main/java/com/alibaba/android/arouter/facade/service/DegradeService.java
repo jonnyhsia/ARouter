@@ -22,6 +22,7 @@ public interface DegradeService extends IProvider {
      * Router has lost.
      *
      * @param postcard meta
+     * @return navigation is handled
      */
     boolean onLost(Context context, Postcard postcard);
 
