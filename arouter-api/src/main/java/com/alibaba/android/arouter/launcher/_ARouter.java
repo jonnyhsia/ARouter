@@ -211,6 +211,14 @@ final class _ARouter {
         }
     }
 
+    protected Postcard method(String path) {
+        if (TextUtils.isEmpty(path)) {
+            throw new HandlerException(Consts.TAG + "Parameter is invalid!");
+        } else {
+            return build(path, RouteType.METHOD.name(), true).asMethod();
+        }
+    }
+
     /**
      * Build postcard by uri
      */
