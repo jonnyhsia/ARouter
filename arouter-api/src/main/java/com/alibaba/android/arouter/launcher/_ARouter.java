@@ -353,21 +353,12 @@ final class _ARouter {
             } else {
                 // No callback for this invoke, then we use the global degrade service.
                 DegradeService degradeService = findDegradeService();
-                boolean handled = false;
                 if (null != degradeService) {
-                    handled = degradeService.onLost(context, postcard);
+                    degradeService.onLost(context, postcard);
                 }
-                if (!handled && debuggable()) {
-                    // Show friendly tips for user.
-                    runInMainThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(mContext, "There's no route matched!\n" +
-                                    " Path = [" + postcard.getPath() + "]\n" +
-                                    " Group = [" + postcard.getGroup() + "]", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+                logger.info(Consts.TAG, "There's no route matched!\n" +
+                        " Path = [" + postcard.getPath() + "]\n" +
+                        " Group = [" + postcard.getGroup() + "]");
             }
 
             return null;
