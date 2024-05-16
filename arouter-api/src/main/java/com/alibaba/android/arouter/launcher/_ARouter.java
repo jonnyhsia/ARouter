@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -483,7 +482,10 @@ final class _ARouter {
      */
     private void startActivity(int requestCode, Context currentContext, Intent intent, Postcard postcard, NavigationCallback callback) {
         if (requestCode >= 0) {  // Need start for result
-            if (currentContext instanceof Activity) {
+            if (postcard.getFragment() != null) {
+                // 优先使用 Fragment 进行跳转, 否则 Fragment 接收不到 result 事件
+                postcard.getFragment().startActivityForResult(intent, requestCode, postcard.getOptionsBundle());
+            } else if (currentContext instanceof Activity) {
                 ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, postcard.getOptionsBundle());
             } else {
                 logger.warning(Consts.TAG, "Must use [navigation(activity, ...)] to support [startActivityForResult]");
