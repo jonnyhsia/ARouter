@@ -76,6 +76,7 @@ public class RouteProcessor extends BaseProcessor {
     private Map<String, String> rootMap = new TreeMap<>();  // Map of root metas, used for generate class file in order.
 
     private TypeMirror iProvider = null;
+    private TypeMirror iNavigator = null;
     private Writer docWriter;       // Writer used for write doc
 
     @Override
@@ -95,6 +96,7 @@ public class RouteProcessor extends BaseProcessor {
         }
 
         iProvider = elementUtils.getTypeElement(Consts.IPROVIDER).asType();
+        iNavigator = elementUtils.getTypeElement(Consts.INAVIGATOR).asType();
 
         logger.info(">>> RouteProcessor init. <<<");
     }
@@ -204,6 +206,9 @@ public class RouteProcessor extends BaseProcessor {
                     }
 
                     routeMeta.setInjectConfig(injectConfig);
+                } else if (isSubtype(tm, iNavigator)) {         // INavigator
+                    logger.info(">>> Found navigator route: " + tm.toString() + " <<<");
+                    routeMeta = new RouteMeta(route, element, RouteType.NAVIGATOR, null);
                 } else if (isSubtype(tm, iProvider)) {         // IProvider
                     logger.info(">>> Found provider route: " + tm.toString() + " <<<");
                     routeMeta = new RouteMeta(route, element, RouteType.PROVIDER, null);

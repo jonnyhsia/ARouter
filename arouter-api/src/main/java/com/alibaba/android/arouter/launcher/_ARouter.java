@@ -1,5 +1,6 @@
 package com.alibaba.android.arouter.launcher;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Fragment;
@@ -10,10 +11,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.alibaba.android.arouter.core.InstrumentationHook;
 import com.alibaba.android.arouter.core.LogisticsCenter;
+import com.alibaba.android.arouter.core.NavigatorRunner;
 import com.alibaba.android.arouter.exception.HandlerException;
 import com.alibaba.android.arouter.exception.InitException;
 import com.alibaba.android.arouter.exception.NoRouteFoundException;
@@ -29,6 +33,7 @@ import com.alibaba.android.arouter.facade.service.MethodExecuteService;
 import com.alibaba.android.arouter.facade.service.PathReplaceService;
 import com.alibaba.android.arouter.facade.service.PretreatmentService;
 import com.alibaba.android.arouter.facade.template.ILogger;
+import com.alibaba.android.arouter.facade.template.INavigator;
 import com.alibaba.android.arouter.facade.template.IRouteGroup;
 import com.alibaba.android.arouter.thread.DefaultPoolExecutor;
 import com.alibaba.android.arouter.utils.Consts;
@@ -400,7 +405,12 @@ final class _ARouter {
         return null;
     }
 
-    private Object _navigation(final Postcard postcard, final int requestCode, final NavigationCallback callback) {
+    @SuppressLint("WrongConstant")
+    private Object _navigation(
+            @NonNull final Postcard postcard,
+            final int requestCode,
+            @Nullable final NavigationCallback callback
+    ) {
         final Context currentContext = postcard.getContext();
 
         switch (postcard.getType()) {
@@ -437,6 +447,21 @@ final class _ARouter {
                 break;
             case PROVIDER:
                 return postcard.getProvider();
+            case NAVIGATOR:
+                Class<?> navigatorClz = postcard.getDestination();
+                INavigator navigator = null;
+                try {
+                    navigator = (INavigator) navigatorClz.getConstructor().newInstance();
+                } catch (Throwable tr) {
+                    logger.error(Consts.TAG, "Fetch navigator instance error, " + TextUtils.formatStackTrace(tr.getStackTrace()));
+                }
+                if (null != navigator) {
+                    NavigatorRunner.run(navigator, postcard);
+                    if (callback != null) {
+                        callback.onArrival(postcard);
+                    }
+                }
+                return null;
             case BOARDCAST:
             case CONTENT_PROVIDER:
             case FRAGMENT:

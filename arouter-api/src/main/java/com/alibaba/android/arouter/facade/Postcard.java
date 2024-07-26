@@ -625,6 +625,14 @@ public final class Postcard extends RouteMeta {
         return this;
     }
 
+    @Override
+    public RouteMeta setType(RouteType type) {
+        if (type == RouteType.NAVIGATOR) {
+            greenChannel();
+        }
+        return super.setType(type);
+    }
+
     @Nullable
     public Fragment getFragment() {
         return fragment;
