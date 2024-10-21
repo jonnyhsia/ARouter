@@ -456,10 +456,7 @@ final class _ARouter {
                     logger.error(Consts.TAG, "Fetch navigator instance error, " + TextUtils.formatStackTrace(tr.getStackTrace()));
                 }
                 if (null != navigator) {
-                    NavigatorRunner.run(navigator, postcard);
-                    if (callback != null) {
-                        callback.onArrival(postcard);
-                    }
+                    NavigatorRunner.run(navigator, postcard, callback);
                 }
                 return null;
             case BOARDCAST:

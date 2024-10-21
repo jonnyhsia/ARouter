@@ -51,7 +51,7 @@ class RegisterCodeGenerator {
                 jarOutputStream.putNextEntry(zipEntry)
                 if (ScanSetting.GENERATE_TO_CLASS_FILE_NAME == entryName) {
 
-                    Logger.i('Insert init code to class >> ' + entryName)
+                    Logger.e('Insert init code to class >> ' + entryName)
 
                     def bytes = referHackWhenInit(inputStream)
                     jarOutputStream.write(bytes)
@@ -115,6 +115,7 @@ class RegisterCodeGenerator {
             if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)) {
                 extension.classList.each { name ->
                     name = name.replaceAll("/", ".")
+                    Logger.e('generate: ' + name)
                     mv.visitLdcInsn(name)//类名
                     // generate invoke register method into LogisticsCenter.loadRouterMap()
                     mv.visitMethodInsn(Opcodes.INVOKESTATIC
