@@ -358,7 +358,7 @@ final class _ARouter {
                 // No callback for this invoke, then we use the global degrade service.
                 DegradeService degradeService = findDegradeService();
                 if (null != degradeService) {
-                    degradeService.onLost(context, postcard);
+                    degradeService.onLost(context, postcard, requestCode);
                 }
                 logger.info(Consts.TAG, "There's no route matched!\n" +
                         " Path = [" + postcard.getPath() + "]\n" +
