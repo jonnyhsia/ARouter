@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * Mark a page can be route by router.
@@ -30,6 +31,8 @@ public @interface Route {
      * Name of route, used to generate javadoc.
      */
     String name() default "";
+
+    String[] alternativePaths() default {};
 
     /**
      * Extra data, can be set by user.

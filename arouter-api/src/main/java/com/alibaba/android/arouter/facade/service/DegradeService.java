@@ -1,6 +1,10 @@
 package com.alibaba.android.arouter.facade.service;
 
 import android.content.Context;
+import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.template.IProvider;
@@ -17,7 +21,26 @@ public interface DegradeService extends IProvider {
     /**
      * Router has lost.
      *
-     * @param postcard meta
+     * @param postcard    meta
+     * @param requestCode
      */
-    void onLost(Context context, Postcard postcard);
+    void onLost(Context context, Postcard postcard, int requestCode);
+
+    /**
+     * 路由解析失败
+     *
+     * @param route 解析失败的路由
+     * @return 处理后的新路由, null 为不继续执行解析
+     */
+    @Nullable
+    Postcard onRouteParseFailed(@NonNull String route);
+
+    /**
+     * 路由解析失败
+     *
+     * @param route 解析失败的路由
+     * @return 处理后的新路由, null 为不继续执行解析
+     */
+    @Nullable
+    Postcard onRouteParseFailed(@NonNull Uri route);
 }

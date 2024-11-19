@@ -25,6 +25,7 @@ public class RouteMeta {
     private int extra;              // Extra data
     private Map<String, Integer> paramsType;  // Param type
     private String name;
+    private String[] alternativePaths;
 
     private Map<String, Autowired> injectConfig;  // Cache inject config.
 
@@ -195,6 +196,10 @@ public class RouteMeta {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String[] getAlternativePaths() {
+        return alternativePaths;
     }
 
     @Override

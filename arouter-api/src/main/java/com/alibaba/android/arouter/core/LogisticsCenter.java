@@ -1,5 +1,17 @@
 package com.alibaba.android.arouter.core;
 
+import static com.alibaba.android.arouter.launcher.ARouter.logger;
+import static com.alibaba.android.arouter.utils.Consts.AROUTER_SP_CACHE_KEY;
+import static com.alibaba.android.arouter.utils.Consts.AROUTER_SP_KEY_MAP;
+import static com.alibaba.android.arouter.utils.Consts.DOT;
+import static com.alibaba.android.arouter.utils.Consts.ROUTE_ROOT_PAKCAGE;
+import static com.alibaba.android.arouter.utils.Consts.SDK_NAME;
+import static com.alibaba.android.arouter.utils.Consts.SEPARATOR;
+import static com.alibaba.android.arouter.utils.Consts.SUFFIX_INTERCEPTORS;
+import static com.alibaba.android.arouter.utils.Consts.SUFFIX_PROVIDERS;
+import static com.alibaba.android.arouter.utils.Consts.SUFFIX_ROOT;
+import static com.alibaba.android.arouter.utils.Consts.TAG;
+
 import android.content.Context;
 import android.net.Uri;
 
@@ -21,23 +33,12 @@ import com.alibaba.android.arouter.utils.PackageUtils;
 import com.alibaba.android.arouter.utils.TextUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import static com.alibaba.android.arouter.launcher.ARouter.logger;
-import static com.alibaba.android.arouter.utils.Consts.AROUTER_SP_CACHE_KEY;
-import static com.alibaba.android.arouter.utils.Consts.AROUTER_SP_KEY_MAP;
-import static com.alibaba.android.arouter.utils.Consts.DOT;
-import static com.alibaba.android.arouter.utils.Consts.ROUTE_ROOT_PAKCAGE;
-import static com.alibaba.android.arouter.utils.Consts.SDK_NAME;
-import static com.alibaba.android.arouter.utils.Consts.SEPARATOR;
-import static com.alibaba.android.arouter.utils.Consts.SUFFIX_INTERCEPTORS;
-import static com.alibaba.android.arouter.utils.Consts.SUFFIX_PROVIDERS;
-import static com.alibaba.android.arouter.utils.Consts.SUFFIX_ROOT;
-import static com.alibaba.android.arouter.utils.Consts.TAG;
 
 /**
  * LogisticsCenter contains all of the map.
@@ -88,24 +89,28 @@ public class LogisticsCenter {
                             + " should implements one of IRouteRoot/IProviderGroup/IInterceptorGroup.");
                 }
             } catch (Exception e) {
-                logger.error(TAG,"register class error:" + className, e);
+                logger.error(TAG, "register class error:" + className, e);
             }
         }
     }
 
     /**
      * method for arouter-auto-register plugin to register Routers
+     *
      * @param routeRoot IRouteRoot implementation class in the package: com.alibaba.android.arouter.core.routers
      */
     private static void registerRouteRoot(IRouteRoot routeRoot) {
         markRegisteredByPlugin();
         if (routeRoot != null) {
-            routeRoot.loadInto(Warehouse.groupsIndex);
+            HashMap<String, Class<? extends IRouteGroup>> map = new HashMap<>();
+            routeRoot.loadInto(map);
+            Warehouse.appendRouteRoot(map);
         }
     }
 
     /**
      * method for arouter-auto-register plugin to register Interceptors
+     *
      * @param interceptorGroup IInterceptorGroup implementation class in the package: com.alibaba.android.arouter.core.routers
      */
     private static void registerInterceptor(IInterceptorGroup interceptorGroup) {
@@ -117,6 +122,7 @@ public class LogisticsCenter {
 
     /**
      * method for arouter-auto-register plugin to register Providers
+     *
      * @param providerGroup IProviderGroup implementation class in the package: com.alibaba.android.arouter.core.routers
      */
     private static void registerProvider(IProviderGroup providerGroup) {
@@ -172,7 +178,9 @@ public class LogisticsCenter {
                 for (String className : routerMap) {
                     if (className.startsWith(ROUTE_ROOT_PAKCAGE + DOT + SDK_NAME + SEPARATOR + SUFFIX_ROOT)) {
                         // This one of root elements, load root.
-                        ((IRouteRoot) (Class.forName(className).getConstructor().newInstance())).loadInto(Warehouse.groupsIndex);
+                        HashMap<String, Class<? extends IRouteGroup>> map = new HashMap<>();
+                        ((IRouteRoot) (Class.forName(className).getConstructor().newInstance())).loadInto(map);
+                        Warehouse.appendRouteRoot(map);
                     } else if (className.startsWith(ROUTE_ROOT_PAKCAGE + DOT + SDK_NAME + SEPARATOR + SUFFIX_INTERCEPTORS)) {
                         // Load interceptorMeta
                         ((IInterceptorGroup) (Class.forName(className).getConstructor().newInstance())).loadInto(Warehouse.interceptorsIndex);
@@ -356,10 +364,10 @@ public class LogisticsCenter {
     }
 
     public synchronized static void addRouteGroupDynamic(String groupName, IRouteGroup group) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        if (Warehouse.groupsIndex.containsKey(groupName)){
+        if (Warehouse.groupsIndex.containsKey(groupName)) {
             // If this group is included, but it has not been loaded
             // load this group first, because dynamic route has high priority.
-            Warehouse.groupsIndex.get(groupName).getConstructor().newInstance().loadInto(Warehouse.routes);
+            Warehouse.loadGroupToRoutes(Warehouse.groupsIndex.get(groupName));
             Warehouse.groupsIndex.remove(groupName);
         }
 

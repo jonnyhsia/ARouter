@@ -2,6 +2,8 @@ package com.alibaba.android.arouter.facade.template;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 /**
  * Provider interface, base of other interface.
  *
@@ -16,5 +18,5 @@ public interface IProvider {
      *
      * @param context ctx
      */
-    void init(Context context);
+    void init(@NonNull Context context);
 }

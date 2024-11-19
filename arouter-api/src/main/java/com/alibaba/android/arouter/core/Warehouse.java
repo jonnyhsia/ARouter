@@ -1,11 +1,14 @@
 package com.alibaba.android.arouter.core;
 
+import com.alibaba.android.arouter.base.RouteGroupHashMap;
 import com.alibaba.android.arouter.base.UniqueKeyTreeMap;
 import com.alibaba.android.arouter.facade.model.RouteMeta;
 import com.alibaba.android.arouter.facade.template.IInterceptor;
 import com.alibaba.android.arouter.facade.template.IProvider;
 import com.alibaba.android.arouter.facade.template.IRouteGroup;
+import com.alibaba.android.arouter.facade.template.RouteGroups;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +23,7 @@ import java.util.Map;
  */
 class Warehouse {
     // Cache route and metas
-    static Map<String, Class<? extends IRouteGroup>> groupsIndex = new HashMap<>();
+    static RouteGroupHashMap groupsIndex = new RouteGroupHashMap();
     static Map<String, RouteMeta> routes = new HashMap<>();
 
     // Cache provider
@@ -38,5 +41,22 @@ class Warehouse {
         providersIndex.clear();
         interceptors.clear();
         interceptorsIndex.clear();
+    }
+
+    static void appendRouteRoot(HashMap<String, Class<? extends IRouteGroup>> map) {
+        for (String group : map.keySet()) {
+            groupsIndex.putGroup(group, map.get(group));
+        }
+    }
+
+    static void loadGroupToRoutes(Object groupObject) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (groupObject instanceof Class) {
+            ((Class<? extends IRouteGroup>) groupObject).getConstructor()
+                    .newInstance()
+                    .loadInto(Warehouse.routes);
+        } else if (groupObject instanceof RouteGroups){
+            ((RouteGroups) groupObject).loadInto(Warehouse.routes);
+        }
+
     }
 }

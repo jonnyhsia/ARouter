@@ -9,9 +9,12 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.Fragment;
+
 import android.util.SparseArray;
 
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
+import com.alibaba.android.arouter.facade.enums.RouteType;
 import com.alibaba.android.arouter.facade.model.RouteMeta;
 import com.alibaba.android.arouter.facade.service.SerializationService;
 import com.alibaba.android.arouter.facade.template.IProvider;
@@ -38,6 +41,7 @@ public final class Postcard extends RouteMeta {
     private boolean greenChannel;
     private SerializationService serializationService;
     private Context context;        // May application or activity, check instance type before use it.
+    private Fragment fragment;
     private String action;
 
     // Animation
@@ -166,6 +170,11 @@ public final class Postcard extends RouteMeta {
      */
     public void navigation(Activity mContext, int requestCode, NavigationCallback callback) {
         ARouter.getInstance().navigation(mContext, this, requestCode, callback);
+    }
+
+    public void navigation(Fragment fragment, int requestCode, NavigationCallback callback) {
+        this.fragment = fragment;
+        navigation(fragment.getActivity(), requestCode, callback);
     }
 
     /**
@@ -609,5 +618,23 @@ public final class Postcard extends RouteMeta {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public Postcard asMethod() {
+        setType(RouteType.METHOD);
+        return this;
+    }
+
+    @Override
+    public RouteMeta setType(RouteType type) {
+        if (type == RouteType.NAVIGATOR) {
+            greenChannel();
+        }
+        return super.setType(type);
+    }
+
+    @Nullable
+    public Fragment getFragment() {
+        return fragment;
     }
 }

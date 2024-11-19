@@ -143,6 +143,10 @@ public final class ARouter {
         return _ARouter.getInstance().build(path);
     }
 
+    public Postcard method(String path) {
+        return _ARouter.getInstance().method(path);
+    }
+
     /**
      * Build the roadmap, draw a postcard.
      *
