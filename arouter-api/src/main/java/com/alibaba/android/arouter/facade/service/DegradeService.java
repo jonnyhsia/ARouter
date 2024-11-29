@@ -21,10 +21,12 @@ public interface DegradeService extends IProvider {
     /**
      * Router has lost.
      *
-     * @param postcard    meta
-     * @param requestCode
+     * @param  postcard    meta
+     * @param  requestCode
+     * @return 返回 null 可表示路由未被消费
      */
-    void onLost(Context context, Postcard postcard, int requestCode);
+    @Nullable
+    Object onLost(Context context, Postcard postcard, int requestCode);
 
     /**
      * 路由解析失败
