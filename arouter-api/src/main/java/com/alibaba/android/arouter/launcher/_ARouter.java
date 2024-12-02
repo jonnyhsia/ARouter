@@ -347,25 +347,28 @@ final class _ARouter {
         // Set context to postcard.
         postcard.setContext(null == context ? mContext : context);
 
-        try {
-            LogisticsCenter.completion(postcard);
-        } catch (NoRouteFoundException ex) {
-            logger.warning(Consts.TAG, ex.getMessage());
+        // 如果 postcard 已经经 LogisticsCenter#completion 处理过, 则不重复处理
+        if (postcard.getType() == null || postcard.getDestination() != null){
+            try {
+                LogisticsCenter.completion(postcard);
+            } catch (NoRouteFoundException ex) {
+                logger.warning(Consts.TAG, ex.getMessage());
 
-            if (null != callback) {
-                callback.onLost(postcard);
-            } else {
-                // No callback for this invoke, then we use the global degrade service.
-                DegradeService degradeService = findDegradeService();
-                if (null != degradeService) {
-                    degradeService.onLost(context, postcard, requestCode);
+                if (null != callback) {
+                    callback.onLost(postcard);
+                } else {
+                    // No callback for this invoke, then we use the global degrade service.
+                    DegradeService degradeService = findDegradeService();
+                    if (null != degradeService) {
+                        degradeService.onLost(context, postcard, requestCode);
+                    }
+                    logger.info(Consts.TAG, "There's no route matched!\n" +
+                            " Path = [" + postcard.getPath() + "]\n" +
+                            " Group = [" + postcard.getGroup() + "]");
                 }
-                logger.info(Consts.TAG, "There's no route matched!\n" +
-                        " Path = [" + postcard.getPath() + "]\n" +
-                        " Group = [" + postcard.getGroup() + "]");
-            }
 
-            return null;
+                return null;
+            }
         }
 
         if (null != callback) {
