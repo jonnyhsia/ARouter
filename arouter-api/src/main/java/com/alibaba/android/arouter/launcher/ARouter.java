@@ -25,6 +25,7 @@ public final class ARouter {
     // Key of raw uri
     public static final String RAW_URI = "NTeRQWvye18AkPd6G";
     public static final String AUTO_INJECT = "wmHzgD4lOj5o4241";
+    public static final String ORIGIN_URI = "origin_uri";
 
     private volatile static ARouter instance = null;
     private volatile static boolean hasInit = false;

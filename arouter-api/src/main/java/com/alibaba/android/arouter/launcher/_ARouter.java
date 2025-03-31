@@ -241,12 +241,15 @@ final class _ARouter {
                 if (degradeService != null) {
                     Postcard postcard = degradeService.onRouteParseFailed(uri);
                     if (postcard != null) {
+                        postcard.withParcelable(ARouter.ORIGIN_URI, uri);
                         return postcard;
                     }
                 }
                 throw new HandlerException(Consts.TAG + "Extract the default group failed, the path (" + uri + ") must be start with '/' and contain more than 2 '/'!");
             }
-            return new Postcard(uri.getPath(), group, uri, null);
+            Postcard postcard =new Postcard(uri.getPath(), group, uri, null);
+            postcard.withParcelable(ARouter.ORIGIN_URI, uri);
+            return postcard;
         }
     }
 
