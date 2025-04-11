@@ -10,6 +10,9 @@ import com.alibaba.android.arouter.facade.template.INavigator;
 public final class NavigatorRunner {
 
     public static void run(INavigator navigator, Postcard postcard, NavigationCallback callback) {
+        if (callback != null) {
+            callback.onFound(postcard);
+        }
         if (navigator.isRunOnMainThread()) {
             navigator.onNavigate(postcard, callback);
         } else {
