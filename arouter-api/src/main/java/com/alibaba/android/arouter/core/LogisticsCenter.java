@@ -303,7 +303,9 @@ public class LogisticsCenter {
                     postcard.greenChannel();    // Provider should skip all of interceptors
                     break;
                 case FRAGMENT:
-                    postcard.greenChannel();    // Fragment needn't interceptors
+                    postcard.greenChannel();    // Fragment do not require interceptors
+                case NAVIGATOR:
+                    postcard.greenChannel();    // Navigator do not require interceptors
                 default:
                     break;
             }
