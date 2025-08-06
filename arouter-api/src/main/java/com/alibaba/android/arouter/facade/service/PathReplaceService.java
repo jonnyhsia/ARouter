@@ -26,4 +26,11 @@ public interface PathReplaceService extends IProvider {
      * @param uri raw uri
      */
     Uri forUri(Uri uri);
+
+    /**
+     * 是否需要处理 uri 的 host (拼接在 host 上)
+     * @param uri
+     * @return
+     */
+    boolean shouldDealHost(Uri uri);
 }

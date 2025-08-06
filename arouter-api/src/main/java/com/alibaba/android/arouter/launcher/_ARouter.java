@@ -36,6 +36,7 @@ import com.alibaba.android.arouter.facade.template.ILogger;
 import com.alibaba.android.arouter.facade.template.INavigator;
 import com.alibaba.android.arouter.facade.template.IRouteGroup;
 import com.alibaba.android.arouter.thread.DefaultPoolExecutor;
+import com.alibaba.android.arouter.utils.ARouterUtils;
 import com.alibaba.android.arouter.utils.Consts;
 import com.alibaba.android.arouter.utils.DefaultLogger;
 import com.alibaba.android.arouter.utils.TextUtils;
@@ -199,8 +200,10 @@ final class _ARouter {
             if (null != pService) {
                 path = pService.forString(path);
             }
-            String group = extractGroup(path);
+            String group = ARouterUtils.extractGroup(path);
             if (group == null) {
+                logger.warning(Consts.TAG, "Failed to extract default group!");
+
                 // group 解析失败，降级处理
                 DegradeService degradeService = findDegradeService();
                 if (degradeService != null) {
@@ -232,10 +235,18 @@ final class _ARouter {
         } else {
             PathReplaceService pService = ARouter.getInstance().navigation(PathReplaceService.class);
             if (null != pService) {
+                String host = uri.getHost();
+                if (!TextUtils.isEmpty(host) && pService.shouldDealHost(uri)) {
+                    uri = uri.buildUpon()
+                            .path("/" + host + uri.getPath())
+                            .build();
+                }
                 uri = pService.forUri(uri);
             }
-            String group = extractGroup(uri.getPath());
+            String group = ARouterUtils.extractGroup(uri.getPath());
             if (group == null) {
+                logger.warning(Consts.TAG, "Failed to extract default group!");
+
                 // group 解析失败，降级处理
                 DegradeService degradeService = findDegradeService();
                 if (degradeService != null) {
@@ -247,7 +258,7 @@ final class _ARouter {
                 }
                 throw new HandlerException(Consts.TAG + "Extract the default group failed, the path (" + uri + ") must be start with '/' and contain more than 2 '/'!");
             }
-            Postcard postcard =new Postcard(uri.getPath(), group, uri, null);
+            Postcard postcard = new Postcard(uri.getPath(), group, uri, null);
             postcard.withParcelable(ARouter.ORIGIN_URI, uri);
             return postcard;
         }
@@ -267,27 +278,6 @@ final class _ARouter {
                 }
             }
             return new Postcard(path, group);
-        }
-    }
-
-    /**
-     * Extract the default group from path.
-     */
-    private String extractGroup(String path) {
-        if (TextUtils.isEmpty(path) || !path.startsWith("/")) {
-            return null;
-        }
-
-        try {
-            String defaultGroup = path.substring(1, path.indexOf("/", 1));
-            if (TextUtils.isEmpty(defaultGroup)) {
-                throw new HandlerException(Consts.TAG + "Extract the default group failed! There's nothing between 2 '/'!");
-            } else {
-                return defaultGroup;
-            }
-        } catch (Exception e) {
-            logger.warning(Consts.TAG, "Failed to extract default group! " + e.getMessage());
-            return null;
         }
     }
 
@@ -351,7 +341,7 @@ final class _ARouter {
         postcard.setContext(null == context ? mContext : context);
 
         // 如果 postcard 已经经 LogisticsCenter#completion 处理过, 则不重复处理
-        if (postcard.getType() == null || postcard.getDestination() != null){
+        if (postcard.getType() == null || postcard.getDestination() != null) {
             try {
                 LogisticsCenter.completion(postcard);
             } catch (NoRouteFoundException ex) {
@@ -546,7 +536,7 @@ final class _ARouter {
             // Check route meta.
             for (Map.Entry<String, RouteMeta> route : dynamicRoute.entrySet()) {
                 String path = route.getKey();
-                String groupByExtract = extractGroup(path);
+                String groupByExtract = ARouterUtils.extractGroup(path);
                 RouteMeta meta = route.getValue();
 
                 if (null == groupName) {
