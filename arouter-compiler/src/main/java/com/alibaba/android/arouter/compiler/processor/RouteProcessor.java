@@ -77,6 +77,7 @@ public class RouteProcessor extends BaseProcessor {
 
     private TypeMirror iProvider = null;
     private TypeMirror iNavigator = null;
+    private TypeMirror iRunnable = null;
     private Writer docWriter;       // Writer used for write doc
 
     @Override
@@ -97,6 +98,7 @@ public class RouteProcessor extends BaseProcessor {
 
         iProvider = elementUtils.getTypeElement(Consts.IPROVIDER).asType();
         iNavigator = elementUtils.getTypeElement(Consts.INAVIGATOR).asType();
+        iRunnable = elementUtils.getTypeElement(Consts.IRUNNABLE).asType();
 
         logger.info(">>> RouteProcessor init. <<<");
     }
@@ -188,8 +190,12 @@ public class RouteProcessor extends BaseProcessor {
                 Route route = element.getAnnotation(Route.class);
                 RouteMeta routeMeta;
 
-                // Activity or Fragment
-                if (isSubtype(tm, type_Activity) || isSubtype(tm, fragmentTm) || isSubtype(tm, fragmentTmV4)) {
+                if (isSubtype(tm, iRunnable)) {         // IRunnable
+                    // 优先判断 iRunnable
+                    logger.info(">>> Found provider route: " + tm.toString() + " <<<");
+                    routeMeta = new RouteMeta(route, element, RouteType.RUNNABLE, null);
+                } else if (isSubtype(tm, type_Activity) || isSubtype(tm, fragmentTm) || isSubtype(tm, fragmentTmV4)) {
+                    // Activity or Fragment
                     // Get all fields annotation by @Autowired
                     Map<String, Integer> paramsType = new HashMap<>();
                     Map<String, Autowired> injectConfig = new HashMap<>();

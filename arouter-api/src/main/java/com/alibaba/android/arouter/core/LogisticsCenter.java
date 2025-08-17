@@ -306,6 +306,8 @@ public class LogisticsCenter {
                     postcard.greenChannel();    // Fragment do not require interceptors
                 case NAVIGATOR:
                     postcard.greenChannel();    // Navigator do not require interceptors
+                case RUNNABLE:
+                    postcard.greenChannel();    // Runnable do not require interceptors
                 default:
                     break;
             }

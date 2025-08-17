@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -18,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import com.alibaba.android.arouter.core.InstrumentationHook;
 import com.alibaba.android.arouter.core.LogisticsCenter;
 import com.alibaba.android.arouter.core.NavigatorRunner;
+import com.alibaba.android.arouter.core.RunnableRunner;
 import com.alibaba.android.arouter.exception.HandlerException;
 import com.alibaba.android.arouter.exception.InitException;
 import com.alibaba.android.arouter.exception.NoRouteFoundException;
@@ -455,6 +457,8 @@ final class _ARouter {
                     NavigatorRunner.run(navigator, postcard, callback);
                 }
                 return null;
+            case RUNNABLE:
+                return RunnableRunner.callRunnable(postcard, callback);
             case BOARDCAST:
             case CONTENT_PROVIDER:
             case FRAGMENT:
