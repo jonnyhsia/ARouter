@@ -1,5 +1,6 @@
 package com.alibaba.android.arouter.core;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.alibaba.android.arouter.facade.Postcard;
@@ -16,14 +17,16 @@ import java.lang.reflect.Modifier;
 public class RunnableRunner {
 
     @Nullable
-    public static Object callRunnable(Postcard postcard, NavigationCallback callback) {
+    public static Object callRunnable(@NonNull Postcard postcard, @Nullable NavigationCallback callback) {
         Class<?> targetClass = postcard.getDestination();
         Method method;
         try {
             method = targetClass.getDeclaredMethod("onNavigate", Postcard.class);
             method.setAccessible(true);
         } catch (Exception e) {
-            callback.onLost(postcard);
+            if (callback != null) {
+                callback.onLost(postcard);
+            }
             ARouter.logger.error("RunnableRunner", e.getMessage(), e);
             return null;
         }
