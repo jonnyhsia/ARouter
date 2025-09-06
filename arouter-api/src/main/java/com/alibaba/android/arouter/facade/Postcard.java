@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.SparseArray;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 
-import android.util.SparseArray;
-
+import com.alibaba.android.arouter.facade.callback.DestinationCallback;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.facade.enums.RouteType;
 import com.alibaba.android.arouter.facade.model.RouteMeta;
@@ -175,6 +176,10 @@ public final class Postcard extends RouteMeta {
     public void navigation(Fragment fragment, int requestCode, NavigationCallback callback) {
         this.fragment = fragment;
         navigation(fragment.getActivity(), requestCode, callback);
+    }
+
+    public void destination(Activity context, DestinationCallback callback) {
+        ARouter.getInstance().destination(context, this, callback);
     }
 
     /**

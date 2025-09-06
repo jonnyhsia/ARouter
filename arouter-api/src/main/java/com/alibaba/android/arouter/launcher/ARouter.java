@@ -6,8 +6,8 @@ import android.net.Uri;
 
 import com.alibaba.android.arouter.exception.InitException;
 import com.alibaba.android.arouter.facade.Postcard;
+import com.alibaba.android.arouter.facade.callback.DestinationCallback;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
-import com.alibaba.android.arouter.facade.model.RouteMeta;
 import com.alibaba.android.arouter.facade.template.ILogger;
 import com.alibaba.android.arouter.facade.template.IRouteGroup;
 import com.alibaba.android.arouter.utils.Consts;
@@ -191,8 +191,13 @@ public final class ARouter {
         return _ARouter.getInstance().navigation(mContext, postcard, requestCode, callback);
     }
 
+    public void destination(Context context, Postcard postcard, DestinationCallback callback) {
+        _ARouter.getInstance().destination(context, postcard, callback);
+    }
+
     /**
      * Add route group dynamic.
+     *
      * @param group route group.
      * @return add result.
      */

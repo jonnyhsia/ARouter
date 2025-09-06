@@ -7,7 +7,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -24,6 +23,7 @@ import com.alibaba.android.arouter.exception.HandlerException;
 import com.alibaba.android.arouter.exception.InitException;
 import com.alibaba.android.arouter.exception.NoRouteFoundException;
 import com.alibaba.android.arouter.facade.Postcard;
+import com.alibaba.android.arouter.facade.callback.DestinationCallback;
 import com.alibaba.android.arouter.facade.callback.InterceptorCallback;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.facade.enums.RouteType;
@@ -343,7 +343,7 @@ final class _ARouter {
         postcard.setContext(null == context ? mContext : context);
 
         // 如果 postcard 已经经 LogisticsCenter#completion 处理过, 则不重复处理
-        if (postcard.getType() == null || postcard.getDestination() != null) {
+        if (postcard.getType() != null || postcard.getDestination() != null) {
             try {
                 LogisticsCenter.completion(postcard);
             } catch (NoRouteFoundException ex) {
@@ -522,6 +522,55 @@ final class _ARouter {
 
         if (null != callback) { // Navigation over.
             callback.onArrival(postcard);
+        }
+    }
+
+    void destination(Context context, Postcard postcard, @NonNull DestinationCallback callback) {
+        PretreatmentService pretreatmentService = ARouter.getInstance().navigation(PretreatmentService.class);
+        if (null != pretreatmentService && !pretreatmentService.onPretreatment(context, postcard)) {
+            // Pretreatment failed, navigation canceled.
+            return;
+        }
+
+        // Set context to postcard.
+        postcard.setContext(null == context ? mContext : context);
+
+        // 如果 postcard 已经经 LogisticsCenter#completion 处理过, 则不重复处理
+        if (postcard.getType() != null || postcard.getDestination() != null) {
+            try {
+                LogisticsCenter.completion(postcard);
+            } catch (NoRouteFoundException ex) {
+                logger.warning(Consts.TAG, ex.getMessage());
+                callback.onLost(postcard);
+                return;
+            }
+        }
+
+        if (!postcard.isGreenChannel()) {   // It must be run in async thread, maybe interceptor cost too mush time made ANR.
+            interceptorService.doInterceptions(postcard, new InterceptorCallback() {
+                /**
+                 * Continue process
+                 *
+                 * @param postcard route meta
+                 */
+                @Override
+                public void onContinue(Postcard postcard) {
+                    callback.onFound(postcard);
+                }
+
+                /**
+                 * Interrupt process, pipeline will be destory when this method called.
+                 *
+                 * @param exception Reson of interrupt.
+                 */
+                @Override
+                public void onInterrupt(Throwable exception) {
+                    callback.onInterrupt(postcard);
+                    logger.info(Consts.TAG, "Navigation failed, termination by interceptor : " + exception.getMessage());
+                }
+            });
+        } else {
+            callback.onFound(postcard);
         }
     }
 
