@@ -1,5 +1,5 @@
-#maven_repository="MavenLocal"
-maven_repository="ReleaseRepository"
+maven_repository="MavenLocal"
+#maven_repository="ReleaseRepository"
 # ReleaseRepository
 while getopts "m:" opt; do
   case $opt in
