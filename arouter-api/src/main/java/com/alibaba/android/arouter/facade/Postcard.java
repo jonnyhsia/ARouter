@@ -178,7 +178,7 @@ public final class Postcard extends RouteMeta {
         navigation(fragment.getActivity(), requestCode, callback);
     }
 
-    public void destination(Activity context, DestinationCallback callback) {
+    public void destination(Context context, DestinationCallback callback) {
         ARouter.getInstance().destination(context, this, callback);
     }
 

@@ -343,7 +343,7 @@ final class _ARouter {
         postcard.setContext(null == context ? mContext : context);
 
         // 如果 postcard 已经经 LogisticsCenter#completion 处理过, 则不重复处理
-        if (postcard.getType() != null || postcard.getDestination() != null) {
+        if (postcard.getType() == null || postcard.getDestination() == null) {
             try {
                 LogisticsCenter.completion(postcard);
             } catch (NoRouteFoundException ex) {
@@ -536,7 +536,7 @@ final class _ARouter {
         postcard.setContext(null == context ? mContext : context);
 
         // 如果 postcard 已经经 LogisticsCenter#completion 处理过, 则不重复处理
-        if (postcard.getType() != null || postcard.getDestination() != null) {
+        if (postcard.getType() == null || postcard.getDestination() == null) {
             try {
                 LogisticsCenter.completion(postcard);
             } catch (NoRouteFoundException ex) {
