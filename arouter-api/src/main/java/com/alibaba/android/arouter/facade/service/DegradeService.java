@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.alibaba.android.arouter.facade.Postcard;
+import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.facade.template.IProvider;
 
 /**
@@ -21,12 +22,13 @@ public interface DegradeService extends IProvider {
     /**
      * Router has lost.
      *
-     * @param  postcard    meta
-     * @param  requestCode
+     * @param postcard    meta
+     * @param requestCode
+     * @param callback
      * @return 返回 null 可表示路由未被消费
      */
     @Nullable
-    Object onLost(Context context, Postcard postcard, int requestCode);
+    Object onLost(Context context, Postcard postcard, int requestCode, NavigationCallback callback);
 
     /**
      * 路由解析失败

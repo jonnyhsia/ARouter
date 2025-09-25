@@ -349,17 +349,21 @@ final class _ARouter {
             } catch (NoRouteFoundException ex) {
                 logger.warning(Consts.TAG, ex.getMessage());
 
-                if (null != callback) {
-                    callback.onLost(postcard);
-                } else {
-                    // No callback for this invoke, then we use the global degrade service.
-                    DegradeService degradeService = findDegradeService();
-                    if (null != degradeService) {
-                        degradeService.onLost(context, postcard, requestCode);
+                Object degradeHandled = null;
+                // No callback for this invoke, then we use the global degrade service.
+                DegradeService degradeService = findDegradeService();
+                if (null != degradeService) {
+                    degradeHandled = degradeService.onLost(context, postcard, requestCode, callback);
+                }
+                logger.info(Consts.TAG, "There's no route matched!\n" +
+                        " Path = [" + postcard.getPath() + "]\n" +
+                        " Group = [" + postcard.getGroup() + "]");
+
+                // degradeService 没有处理路由, 则尝试 callback 回调
+                if (degradeHandled == null || Boolean.FALSE.equals(degradeHandled)) {
+                    if (null != callback){
+                        callback.onLost(postcard);
                     }
-                    logger.info(Consts.TAG, "There's no route matched!\n" +
-                            " Path = [" + postcard.getPath() + "]\n" +
-                            " Group = [" + postcard.getGroup() + "]");
                 }
 
                 return null;
